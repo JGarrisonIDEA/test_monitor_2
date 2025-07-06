@@ -46,3 +46,42 @@ is configured to read `triggerBody().body.attachments`.
 python send_teams_notification.py
 ```
 
+
+## Running the API Server
+
+A small Flask application is provided in `api_server.py` to expose the
+`check_services` function over HTTP. Install Flask and then run the server:
+
+```bash
+pip install flask
+python api_server.py  # listens on port 8000
+```
+
+If you prefer the `flask run` command, set the `FLASK_APP` environment
+variable and specify the host and port. Binding to `0.0.0.0` allows
+access from outside the local machine (useful if you're running in WSL
+or a container):
+
+```bash
+FLASK_APP=api_server.py flask run --host 0.0.0.0 -p 8000
+```
+
+Send a POST request with the webhook URL and service definitions. Each
+service includes a dotted `module:function` path for its health check.
+
+```bash
+curl -X POST http://localhost:8000/check \
+  -H 'Content-Type: application/json' \
+  -d '{
+        "webhook_url": "<webhook-url>",
+        "services": [
+          {"name": "example_service", "check": "mymodule:ping_api", "alert_on_success": false}
+        ]
+      }'
+```
+
+Replace `mymodule:ping_api` with the actual path to your health check
+function. If the module or function cannot be imported, the server responds
+with `400 Bad Request` and an error message.
+
+The API will return a JSON object mapping service names to their status.
