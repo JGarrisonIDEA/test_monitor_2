@@ -58,10 +58,14 @@ python api_server.py  # listens on port 8000
 ```
 
 If you prefer the `flask run` command, set the `FLASK_APP` environment
-variable and specify the port:
+
+variable and specify the host and port. Binding to `0.0.0.0` allows
+access from outside the local machine (useful if you're running in WSL
+or a container):
 
 ```bash
-FLASK_APP=api_server.py flask run -p 8000
+FLASK_APP=api_server.py flask run --host 0.0.0.0 -p 8000
+
 ```
 
 Send a POST request with the webhook URL and service definitions. Each
@@ -77,5 +81,11 @@ curl -X POST http://localhost:8000/check \
         ]
       }'
 ```
+
+
+Replace `mymodule:ping_api` with the actual path to your health check
+function. If the module or function cannot be imported, the server responds
+with `400 Bad Request` and an error message.
+
 
 The API will return a JSON object mapping service names to their status.
