@@ -11,6 +11,7 @@ app = Flask(__name__)
 
 def load_callable(path: str) -> Callable[[], Any]:
     """Load a callable from a ``module:function`` style path."""
+
     try:
         module_name, func_name = path.split(":", 1)
     except ValueError as exc:
@@ -27,6 +28,7 @@ def load_callable(path: str) -> Callable[[], Any]:
         raise ImportError(f"Module '{module_name}' has no attribute '{func_name}'") from exc
 
 
+
 @app.route("/check", methods=["POST"])
 def check() -> Any:
     data = request.get_json(force=True)
@@ -38,10 +40,12 @@ def check() -> Any:
         name = svc["name"]
         path = svc["check"]
         alert_on_success = svc.get("alert_on_success", False)
+
         try:
             health_fn = load_callable(path)
         except Exception as exc:
             return jsonify({"error": str(exc)}), 400
+
         services.append(Service(name, health_fn, alert_on_success))
 
     statuses = check_services(services, webhook_url)
