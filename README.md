@@ -6,15 +6,13 @@ This repository contains a simple Python library to monitor services and send al
 
 ```
 from monitorlib.monitor import Service, HealthResult, check_services
+from example_checks import ping_example
 
-# Define a health check function
-
-def ping_api():
-    # Example health check
-    return HealthResult(healthy=True, message="API responded")
+# ``ping_example`` performs a real HTTP GET request to ``https://example.com``
+# and returns a ``HealthResult`` based on the response status.
 
 services = [
-    Service('example_service', ping_api, alert_on_success=False),
+    Service('example_service', ping_example, alert_on_success=False),
 ]
 
 check_services(services, '<webhook-url>')
@@ -77,13 +75,13 @@ curl -X POST http://localhost:8000/check \
   -d '{
         "webhook_url": "<webhook-url>",
         "services": [
-          {"name": "example_service", "check": "mymodule:ping_api", "alert_on_success": false}
+          {"name": "example_service", "check": "example_checks:ping_example", "alert_on_success": false}
         ]
       }'
 ```
 
 
-Replace `mymodule:ping_api` with the actual path to your health check
+Replace `example_checks:ping_example` with the path to your own health check
 function. If the module or function cannot be imported, the server responds
 with `400 Bad Request` and an error message.
 
