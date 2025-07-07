@@ -87,3 +87,22 @@ with `400 Bad Request` and an error message.
 
 
 The API will return a JSON object mapping service names to their status.
+
+## Running the UI
+
+`ui_server.py` provides a very small web interface on top of the API.
+It renders a form where you can enter the webhook URL and up to three
+services to check. The UI sends the form data to the API server and
+displays the results in a table.
+
+Start the API server first (listening on port 8000) and then run the
+UI on a different port:
+
+```bash
+pip install flask
+python ui_server.py  # listens on port 5000 by default
+```
+
+Set the `API_URL` environment variable if the API is reachable at a
+different address. The UI will show each service's status after the
+checks complete.
