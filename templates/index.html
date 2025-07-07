@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+    <title>Service Monitor UI</title>
+    <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    table { border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 0.5em; }
+    </style>
+</head>
+<body>
+<h1>Service Monitor</h1>
+<form method="post">
+    <div>
+        <label>Webhook URL:<br>
+            <input type="text" name="webhook_url" size="60">
+        </label>
+    </div>
+    <h3>Services</h3>
+    <table>
+        <tr><th>Name</th><th>Check path</th><th>Alert on Success</th></tr>
+        {% for i in range(3) %}
+        <tr>
+            <td><input type="text" name="service_name"></td>
+            <td><input type="text" name="service_check" size="40"></td>
+            <td><input type="checkbox" name="alert_on_success"></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <div>
+        <button type="submit">Run Checks</button>
+    </div>
+</form>
+{% if error %}
+<p style="color: red;">Error: {{ error }}</p>
+{% endif %}
+{% if results %}
+<h3>Results</h3>
+<table>
+    <tr><th>Service</th><th>Status</th><th>Message</th></tr>
+    {% for name, info in results.items() %}
+    <tr>
+        <td>{{ name }}</td>
+        <td>{{ 'UP' if info.healthy else 'DOWN' }}</td>
+        <td>{{ info.message }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+</body>
+</html>
